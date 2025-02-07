@@ -1,5 +1,6 @@
 {
   "SCIENCE_PARSE_API_HOST": "http://127.0.0.1",
   "SCIENCE_PARSE_API_PORT": "8079",
-  "UPLOAD_DIR": "temp_files"
+  "UPLOAD_DIR": "temp_files",
+  "BART_MODEL": "IshanHF97/sciarguminer-bart-base-gen-model"
 }

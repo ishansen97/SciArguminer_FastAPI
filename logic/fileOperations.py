@@ -36,6 +36,7 @@ def process_pdf_file(file_path) -> List[Section]:
     port = config.science_parse_api_port
 
     information = []
+    arguments = []
     path = Path(file_path)
     output_dict = parse_pdf(host, path, port=port)
     output_sections = output_dict['sections'][:5]
@@ -49,6 +50,8 @@ def process_pdf_file(file_path) -> List[Section]:
             title = 'Abstract'
         text = section['text']
         sect_obj = Section(title, text)
+        sect_obj.populate_inferenced_text()
         information.append(sect_obj)
+        arguments.extend(sect_obj.arguments)
 
-    return information
+    return information, arguments

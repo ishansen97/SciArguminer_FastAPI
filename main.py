@@ -39,10 +39,11 @@ async def upload_file(file: UploadFile = File(...)):
 
     # save the file
     file_path = save_upload_file(file)
-    sections = process_pdf_file(file_path)
+    sections, arguments = process_pdf_file(file_path)
 
     return {
         "status": HTTPStatus.OK,
         "message": f"File uploaded successfully. Filename: {file_name}",
-        "sections": sections
+        "sections": sections,
+        "arguments": arguments
     }
