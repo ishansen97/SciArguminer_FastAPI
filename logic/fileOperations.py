@@ -31,12 +31,13 @@ def save_upload_file(upload_file: UploadFile):
 
     return save_path
 
-def process_pdf_file(file_path) -> List[Section]:
+def process_pdf_file(file_path):
     host = config.science_parse_api_host
     port = config.science_parse_api_port
 
     information = []
     arguments = []
+    relations = []
     path = Path(file_path)
     output_dict = parse_pdf(host, path, port=port)
     output_sections = output_dict['sections'][:5]
@@ -53,5 +54,6 @@ def process_pdf_file(file_path) -> List[Section]:
         sect_obj.populate_inferenced_text()
         information.append(sect_obj)
         arguments.extend(sect_obj.arguments)
+        relations.extend(sect_obj.relations)
 
-    return information, arguments
+    return information, arguments, relations

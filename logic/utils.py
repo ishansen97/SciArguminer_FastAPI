@@ -3,6 +3,7 @@ import re
 from typer.models import ArgumentInfo
 
 from models.Argument import Argument
+from models.Relation import Relation
 
 
 def extract_text(text, max_length=512):
@@ -50,3 +51,18 @@ def extract_argument_info(text, content):
         start, end = index, index + len(argument)
 
     return Argument(argument, start, end, argType)
+
+
+def extract_relations(text):
+    rel_pattern = r'\[\s*([^|\]=]+)\s*\|\s*([^|\]=]+)\s*\|\s*([^=|\]]+)\s*=\s*([^\]]+)\s*\]'
+    matches = re.finditer(rel_pattern, text)
+
+    results: list[Relation] = []
+
+    for match in matches:
+        head = Argument(match.group(1).strip(), 0, 0, match.group(2))
+        tail = Argument(match.group(4).strip(), 0, 0, '')
+        relation = match.group(3).strip()
+        results.append(Relation(head, tail, relation))
+
+    return results
