@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 from typer.models import ArgumentInfo
 
@@ -66,3 +67,9 @@ def extract_relations(text):
         results.append(Relation(head, tail, relation))
 
     return results
+
+def get_datetime(text):
+    if text is not None:
+        # return datetime.strptime(text, '%Y-%m-%d %H:%M:%S')
+        return datetime.strptime(text, '%Y-%m-%d')
+    return None
