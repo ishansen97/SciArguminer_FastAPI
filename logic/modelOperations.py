@@ -1,5 +1,5 @@
 import torch
-from transformers import pipeline, BartForConditionalGeneration, BartTokenizer
+from transformers import pipeline, BartForConditionalGeneration, BartTokenizer, T5Tokenizer, T5ForConditionalGeneration
 
 from config import ConfigManager
 import spacy
@@ -12,15 +12,16 @@ def generate_augmented_text(text):
     model_name = config.bart_model
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = BartForConditionalGeneration.from_pretrained(model_name).to(device)
-    tokenizer = BartTokenizer.from_pretrained(model_name)
+    # model = BartForConditionalGeneration.from_pretrained(model_name).to(device)
+    # tokenizer = BartTokenizer.from_pretrained(model_name)
+    model, tokenizer = get_model_and_tokenizer()
     max_length = model.config.max_position_embeddings
 
     input = (tokenizer(text, return_tensors="pt", padding='max_length', truncation=True, max_length=max_length)
              .to(device))
 
     try:
-        outputs = model.generate(**input, max_new_tokens=1024)
+        outputs = model.generate(**input, max_new_tokens=max_length)
         generated_text = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
         return generated_text
     except Exception as e:
@@ -47,3 +48,14 @@ def get_section_sentences(content, max_length=1024):
         if idx == len(sentences) - 1:
             section_sentences.append(eligible_sents)
     return section_sentences
+
+def get_model_and_tokenizer():
+    model = tokenizer = None
+    if config.model_type == "BART":
+        model = BartForConditionalGeneration.from_pretrained(config.model_name)
+        tokenizer = BartTokenizer.from_pretrained(config.model_name)
+    elif config.model_type == "T5":
+        model = T5ForConditionalGeneration.from_pretrained(config.model_name)
+        tokenizer = T5Tokenizer.from_pretrained(config.model_name)
+
+    return model, tokenizer

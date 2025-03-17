@@ -1,8 +1,6 @@
 import re
 from datetime import datetime
 
-from typer.models import ArgumentInfo
-
 from models.Argument import Argument
 from models.Relation import Relation
 
@@ -31,17 +29,10 @@ def extract_text(text, max_length=512):
 
 def extract_components(text):
     # Regex pattern to capture text within square brackets
-    # pattern = r'\[([^]]+?\s\|\s\w+)(?:\s*\|.*)?\]'
     pattern = r'\[([^]]+?\s\|\s\w+)'
 
     matches = re.findall(pattern, text)
-
-    # Print extracted argument components
-    # for idx, match in enumerate(matches):
-    # print(f'{idx+1}) {match}')
     split_components = [match.split('|') for match in matches]
-    # print(split_components)
-    # components = [match.split('|')[0].strip() for match in matches]
     return split_components
 
 def extract_argument_info(text, content):
