@@ -7,7 +7,7 @@ class Config:
         self.science_parse_api_host = ''
         self.science_parse_api_port = ''
         self.upload_dir = ''
-        self.bart_model = ''
+        self.model_name = ''
         self.model_type = ''
         self.__read_file(config_file)
 
@@ -17,7 +17,7 @@ class Config:
             self.science_parse_api_host = config_data['SCIENCE_PARSE_API_HOST']
             self.science_parse_api_port = config_data['SCIENCE_PARSE_API_PORT']
             self.upload_dir = config_data['UPLOAD_DIR']
-            self.bart_model = config_data['MODEL_NAME']
+            self.model_name = config_data['MODEL_NAME']
             self.model_type = config_data['MODEL_TYPE']
 
     def __str__(self) -> str:

@@ -9,7 +9,7 @@ nlp = spacy.load("en_core_web_sm")  # Load a small English NLP model
 
 
 def generate_augmented_text(text):
-    model_name = config.bart_model
+    # model_name = config.model_name
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # model = BartForConditionalGeneration.from_pretrained(model_name).to(device)
