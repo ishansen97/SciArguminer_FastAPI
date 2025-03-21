@@ -15,7 +15,8 @@ def generate_augmented_text(text):
     # model = BartForConditionalGeneration.from_pretrained(model_name).to(device)
     # tokenizer = BartTokenizer.from_pretrained(model_name)
     model, tokenizer = get_model_and_tokenizer()
-    max_length = model.config.max_position_embeddings
+    # max_length = model.config.max_position_embeddings
+    max_length = 1024
 
     input = (tokenizer(text, return_tensors="pt", padding='max_length', truncation=True, max_length=max_length)
              .to(device))
