@@ -3,7 +3,6 @@ from logic import modelOperations, utils
 from models.Argument import Argument
 from models.Relation import Relation
 
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 class Section:

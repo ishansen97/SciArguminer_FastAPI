@@ -12,7 +12,7 @@ from logic.fileOperations import save_upload_file, process_pdf_file
 from service.historyService import HistoryService
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
