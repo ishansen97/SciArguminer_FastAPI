@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import logging
+import torch
 
 from fastapi import UploadFile
 from science_parse_api.api import parse_pdf
@@ -43,6 +44,9 @@ def process_pdf_file(file_path):
     path = Path(file_path)
     output_dict = parse_pdf(host, path, port=port)
     output_sections = output_dict['sections'][:5]
+
+    logger.debug(f'model type: {config.model_type}')
+    logger.debug(f"device type: {'gpu' if torch.cuda.is_available() else 'cpu' }")
 
     for idx, section in enumerate(output_sections):
         key = 'heading'
