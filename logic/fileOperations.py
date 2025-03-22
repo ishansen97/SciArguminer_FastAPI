@@ -43,7 +43,7 @@ def process_pdf_file(file_path):
     relations = []
     path = Path(file_path)
     output_dict = parse_pdf(host, path, port=port)
-    output_sections = output_dict['sections'][:5]
+    output_sections = output_dict['sections']
 
     logger.debug(f'model type: {config.model_type}')
     logger.debug(f"device type: {'gpu' if torch.cuda.is_available() else 'cpu' }")
@@ -67,4 +67,6 @@ def process_pdf_file(file_path):
 
         logger.info(f'Finished processing the section {title}')
 
+    os.remove(file_path)
+    logger.info(f'File {file_path} has been deleted')
     return information, arguments, relations
