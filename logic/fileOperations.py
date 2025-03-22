@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import List
+import logging
 
 from fastapi import UploadFile
 from science_parse_api.api import parse_pdf
@@ -9,6 +9,8 @@ from config import ConfigManager
 from models.Section import Section
 
 config = ConfigManager().config
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 def save_upload_file(upload_file: UploadFile):
     """
@@ -51,9 +53,14 @@ def process_pdf_file(file_path):
             title = 'Abstract'
         text = section['text']
         sect_obj = Section(title, text)
+
+        logger.info(f'Staring to processing the section {title}')
+
         sect_obj.populate_inferenced_text()
         information.append(sect_obj)
         arguments.extend(sect_obj.arguments)
         relations.extend(sect_obj.relations)
+
+        logger.info(f'Finished processing the section {title}')
 
     return information, arguments, relations

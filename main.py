@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from http import HTTPStatus
 
 from fastapi import FastAPI, File, UploadFile, Depends
