@@ -10,7 +10,6 @@ from config import ConfigManager
 from models.Section import Section
 
 config = ConfigManager().config
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 def save_upload_file(upload_file: UploadFile):
