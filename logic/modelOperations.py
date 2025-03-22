@@ -14,7 +14,7 @@ def generate_augmented_text(text):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # model = BartForConditionalGeneration.from_pretrained(model_name).to(device)
     # tokenizer = BartTokenizer.from_pretrained(model_name)
-    model, tokenizer = get_model_and_tokenizer()
+    model, tokenizer = get_model_and_tokenizer(device)
     # max_length = model.config.max_position_embeddings
     max_length = 1024
 
@@ -51,13 +51,13 @@ def get_section_sentences(content, max_length=1024):
             section_sentences.append(eligible_sents)
     return section_sentences
 
-def get_model_and_tokenizer():
+def get_model_and_tokenizer(device):
     model = tokenizer = None
     if config.model_type == "BART":
-        model = BartForConditionalGeneration.from_pretrained(config.model_name)
+        model = BartForConditionalGeneration.from_pretrained(config.model_name).to(device)
         tokenizer = BartTokenizer.from_pretrained(config.model_name)
     elif config.model_type == "T5":
-        model = T5ForConditionalGeneration.from_pretrained(config.model_name)
+        model = T5ForConditionalGeneration.from_pretrained(config.model_name).to(device)
         tokenizer = T5Tokenizer.from_pretrained(config.model_name)
 
     return model, tokenizer
