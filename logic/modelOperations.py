@@ -18,16 +18,17 @@ def generate_augmented_text(text):
     # max_length = model.config.max_position_embeddings
     max_length = 1024
 
-    input = (tokenizer(text, return_tensors="pt", padding='max_length', truncation=True, max_length=max_length)
-             .to(device))
+    if (len(text) > 0):
+        input = (tokenizer(text, return_tensors="pt", padding='max_length', truncation=True, max_length=max_length)
+                 .to(device))
 
-    try:
-        outputs = model.generate(**input, max_new_tokens=max_length)
-        generated_text = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
-        return generated_text
-    except Exception as e:
-        # Log or handle errors during generation
-        raise RuntimeError(f"Error generating augmented text: {e}")
+        try:
+            outputs = model.generate(**input, max_new_tokens=max_length)
+            generated_text = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
+            return generated_text
+        except Exception as e:
+            # Log or handle errors during generation
+            raise RuntimeError(f"Error generating augmented text: {e}")
 
 
 def get_section_sentences(content, max_length=1024):
