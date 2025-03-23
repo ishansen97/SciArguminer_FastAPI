@@ -68,7 +68,7 @@ def process_pdf_file(file_path):
         logger.info(f'Finished processing the section {title}')
 
     # get the summary info
-    summary = get_summary(arguments, relations)
+    summary = get_summary(arguments=arguments, relations=relations)
     os.remove(file_path)
     logger.info(f'File {file_path} has been deleted')
     return information, arguments, relations, summary
