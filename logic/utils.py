@@ -80,17 +80,11 @@ def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary
     relation_group_list = [(key, list(group)) for key, group in relation_groups if key in REL_TYPES]
     argument_group_list = [(key, list(group)) for key, group in argument_groups if key in ARG_TYPES]
 
-    logger.info(f'relation_group_list: {relation_group_list}')
-    logger.info(f'argument_group_list: {argument_group_list}')
-
     relation_groups_total = sum(list(map(lambda pair: len(pair[1]), relation_group_list)), 0)
     argument_groups_total = sum(list(map(lambda pair: len(pair[1]), argument_group_list)), 0)
 
     relation_summary = {key: len(group) for key, group in relation_group_list if key in REL_TYPES}
     argument_summary = {key: len(group) for key, group in argument_group_list if key in ARG_TYPES}
-
-    logger.info(f'relation_summary: {relation_summary}')
-    logger.info(f'argument_summary: {argument_summary}')
 
     relation_summary = {**relation_summary, 'totalCount': relation_groups_total}
     argument_summary = {**argument_summary, 'totalCount': argument_groups_total}
