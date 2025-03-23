@@ -1,4 +1,5 @@
 import re
+import logging
 from datetime import datetime
 from itertools import groupby
 
@@ -6,6 +7,7 @@ from models.Argument import Argument
 from models.Relation import Relation
 from models.Summary import Summary
 
+logger = logging.getLogger(__name__)
 
 def extract_text(text, max_length=512):
     """
@@ -76,6 +78,9 @@ def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary
 
     relation_summary = {key: len(list(group)) for key, group in relation_groups}
     argument_summary = {key: len(list(group)) for key, group in argument_groups}
+
+    logger.info(f'relation_summary: {relation_summary}')
+    logger.info(f'argument_summary: {argument_summary}')
 
     relation_summary = {**relation_summary, 'totalCount': relation_groups_total}
     argument_summary = {**argument_summary, 'totalCount': argument_groups_total}
