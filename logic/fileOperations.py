@@ -7,6 +7,7 @@ from fastapi import UploadFile
 from science_parse_api.api import parse_pdf
 
 from config import ConfigManager
+from logic.utils import get_summary
 from models.Section import Section
 
 config = ConfigManager().config
@@ -66,6 +67,8 @@ def process_pdf_file(file_path):
 
         logger.info(f'Finished processing the section {title}')
 
+    # get the summary info
+    summary = get_summary(arguments, relations)
     os.remove(file_path)
     logger.info(f'File {file_path} has been deleted')
-    return information, arguments, relations
+    return information, arguments, relations, summary

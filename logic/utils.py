@@ -1,8 +1,10 @@
 import re
 from datetime import datetime
+from itertools import groupby
 
 from models.Argument import Argument
 from models.Relation import Relation
+from models.Summary import Summary
 
 
 def extract_text(text, max_length=512):
@@ -64,3 +66,19 @@ def get_datetime(text):
         # return datetime.strptime(text, '%Y-%m-%d %H:%M:%S')
         return datetime.strptime(text, '%Y-%m-%d')
     return None
+
+def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary:
+    relation_groups = groupby(relations, lambda r: r.relation.strip())
+    argument_groups = groupby(arguments, lambda r: r.type.strip())
+
+    relation_groups_total = sum(map(len, [group for group in relation_groups]), 0)
+    argument_groups_total = sum(map(len, [group for group in argument_groups]), 0)
+
+    relation_summary = {key: len(list(group)) for key, group in relation_groups}
+    argument_summary = {key: len(list(group)) for key, group in argument_groups}
+
+    relation_summary = {**relation_summary, 'totalCount': relation_groups_total}
+    argument_summary = {**argument_summary, 'totalCount': argument_groups_total}
+
+    summary = Summary(argument_summary, relation_summary)
+    return summary

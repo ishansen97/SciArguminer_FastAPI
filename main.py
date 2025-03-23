@@ -56,7 +56,7 @@ async def upload_file(file: UploadFile = File(...)):
 
     # save the file
     file_path = save_upload_file(file)
-    sections, arguments, relations = process_pdf_file(file_path)
+    sections, arguments, relations, summary = process_pdf_file(file_path)
 
     endTime = datetime.now()
     processedTime = endTime - startTime
@@ -69,7 +69,8 @@ async def upload_file(file: UploadFile = File(...)):
         "message": f"File uploaded successfully. Filename: {file_name}",
         "sections": sections,
         "arguments": arguments,
-        "relations": relations
+        "relations": relations,
+        "summary": summary
     }
 
 @app.get("/api/v1/history")
