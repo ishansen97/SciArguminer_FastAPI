@@ -1,9 +1,9 @@
 import re
 import logging
-import constants
 from datetime import datetime
 from itertools import groupby
 
+from logic.constants import REL_TYPES, ARG_TYPES
 from models.Argument import Argument
 from models.Relation import Relation
 from models.Summary import Summary
@@ -74,14 +74,14 @@ def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary
     relation_groups = groupby(relations, key=lambda r: r.relation.strip())
     argument_groups = groupby(arguments, key=lambda r: r.type.strip())
 
-    relation_group_list = [(key, list(group)) for key, group in relation_groups if key in constants.REL_TYPES]
-    argument_group_list = [(key, list(group)) for key, group in argument_groups if key in constants.ARG_TYPES]
+    relation_group_list = [(key, list(group)) for key, group in relation_groups if key in REL_TYPES]
+    argument_group_list = [(key, list(group)) for key, group in argument_groups if key in ARG_TYPES]
 
     relation_groups_total = sum(list(map(lambda pair: pair[1], relation_group_list)), 0)
     argument_groups_total = sum(list(map(lambda pair: pair[1], argument_group_list)), 0)
 
-    relation_summary = {key: len(group) for key, group in relation_group_list if key in constants.REL_TYPES}
-    argument_summary = {key: len(group) for key, group in argument_group_list if key in constants.ARG_TYPES}
+    relation_summary = {key: len(group) for key, group in relation_group_list if key in REL_TYPES}
+    argument_summary = {key: len(group) for key, group in argument_group_list if key in ARG_TYPES}
 
     logger.info(f'relation_summary: {relation_summary}')
     logger.info(f'argument_summary: {argument_summary}')
