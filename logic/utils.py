@@ -76,6 +76,11 @@ def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary
     relation_groups_total = sum(map(len, [group for group in relation_groups]), 0)
     argument_groups_total = sum(map(len, [group for group in argument_groups]), 0)
 
+    for key, group in relation_groups:
+        logger.info(f'Relation Group {key} has {len(list(group))} entries')
+
+    for key, group in argument_groups:
+        logger.info(f'Argument Group {key} has {len(list(group))} entries')
     relation_summary = {key: len(list(group)) for key, group in relation_groups}
     argument_summary = {key: len(list(group)) for key, group in argument_groups}
 
