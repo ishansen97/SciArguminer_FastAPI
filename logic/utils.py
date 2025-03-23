@@ -71,8 +71,11 @@ def get_datetime(text):
     return None
 
 def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary:
-    relation_groups = groupby(relations, key=lambda r: r.relation.strip())
-    argument_groups = groupby(arguments, key=lambda r: r.type.strip())
+    relations_sorted = sorted(relations, key=lambda r: r.relation.strip())
+    arguments_sorted = sorted(arguments, key=lambda a: a.type.strip())
+
+    relation_groups = groupby(relations_sorted, key=lambda r: r.relation.strip())
+    argument_groups = groupby(arguments_sorted, key=lambda r: r.type.strip())
 
     relation_group_list = [(key, list(group)) for key, group in relation_groups if key in REL_TYPES]
     argument_group_list = [(key, list(group)) for key, group in argument_groups if key in ARG_TYPES]
