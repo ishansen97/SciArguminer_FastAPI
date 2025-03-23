@@ -77,8 +77,8 @@ def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary
     relation_group_list = [(key, list(group)) for key, group in relation_groups if key in REL_TYPES]
     argument_group_list = [(key, list(group)) for key, group in argument_groups if key in ARG_TYPES]
 
-    relation_groups_total = sum(list(map(lambda pair: pair[1], relation_group_list)), 0)
-    argument_groups_total = sum(list(map(lambda pair: pair[1], argument_group_list)), 0)
+    relation_groups_total = sum(list(map(lambda pair: len(pair[1]), relation_group_list)), 0)
+    argument_groups_total = sum(list(map(lambda pair: len(pair[1]), argument_group_list)), 0)
 
     relation_summary = {key: len(group) for key, group in relation_group_list if key in REL_TYPES}
     argument_summary = {key: len(group) for key, group in argument_group_list if key in ARG_TYPES}
