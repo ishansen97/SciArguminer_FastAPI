@@ -73,19 +73,14 @@ def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary
     relation_groups = groupby(relations, key=lambda r: r.relation.strip())
     argument_groups = groupby(arguments, key=lambda r: r.type.strip())
 
-    relation_groups_total = sum(map(len, [group for group in relation_groups]), 0)
-    argument_groups_total = sum(map(len, [group for group in argument_groups]), 0)
+    relation_group_list = [(key, list(group)) for key, group in relation_groups]
+    argument_group_list = [(key, list(group)) for key, group in argument_groups]
 
-    logger.info(f'relation_groups: {relation_groups}')
-    logger.info(f'argument_groups: {argument_groups}')
-    for key, group in relation_groups:
-        logger.info(f'Relation Group {key} has {len(list(group))} entries')
+    relation_groups_total = sum(map(len, [pair[1] for pair in relation_group_list]), 0)
+    argument_groups_total = sum(map(len, [pair[1] for pair in argument_group_list]), 0)
 
-    for arg_key, arg_group in argument_groups:
-        logger.info(f'Argument Group {arg_key} has {len(list(arg_group))} entries')
-
-    relation_summary = {key: len(list(group)) for key, group in relation_groups}
-    argument_summary = {key: len(list(group)) for key, group in argument_groups}
+    relation_summary = {key: len(group) for key, group in relation_group_list}
+    argument_summary = {key: len(group) for key, group in argument_group_list}
 
     logger.info(f'relation_summary: {relation_summary}')
     logger.info(f'argument_summary: {argument_summary}')
