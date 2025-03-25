@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_db
 from db.seed_async import init_db
 from logic.fileOperations import save_upload_file, process_pdf_file
+from models.Report import ReportModel
+from service.ReportService import ReportService
 from service.historyService import HistoryService
 
 # Configure logging
@@ -80,4 +82,14 @@ async def get_history(fromDate: str, toDate: str, db: AsyncSession = Depends(get
     return {
         "status": HTTPStatus.OK,
         "records": records
+    }
+
+@app.post("/api/v1/report", response_model=None)
+async def save_report(report: ReportModel, db: AsyncSession = Depends(get_db)):
+    reportService = ReportService(db)
+    logger.info(f"Processing report '{report.reportName}'")
+    await reportService.save_report(report)
+    return {
+        "status": HTTPStatus.OK,
+        "message": f"Report saved successfully. ReportName: {report.reportName}",
     }
