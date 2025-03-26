@@ -8,7 +8,7 @@ class ArgumentModel(BaseModel):
     text: str
     start: int
     end: int
-    argType: str
+    type: str
 
 class RelationModel(BaseModel):
     head: ArgumentModel
@@ -19,4 +19,4 @@ class ReportModel(BaseModel):
     reportName: str
     arguments: list[ArgumentModel]
     relations: list[RelationModel]
-    summary: dict[str, int]
+    summary: dict[str, dict[str, int]]
