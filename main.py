@@ -93,3 +93,14 @@ async def save_report(report: ReportModel, db: AsyncSession = Depends(get_db)):
         "status": HTTPStatus.OK,
         "message": f"Report saved successfully. ReportName: {report.reportName}",
     }
+
+@app.get("/api/v1/report/{reportId}")
+async def get_report(reportId: int, db: AsyncSession = Depends(get_db)):
+    reportService = ReportService(db)
+    logger.info(f"Accessing report '{reportId}'")
+    report = await reportService.get_report(reportId)
+
+    return {
+        "status": HTTPStatus.OK if report is not None else HTTPStatus.NOT_FOUND,
+        "report": report
+    }

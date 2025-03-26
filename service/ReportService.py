@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import Depends
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_db
@@ -28,3 +29,10 @@ class ReportService:
 
         self.db.add(db_report)
         await self.db.commit()
+
+    async def get_report(self, reportId: int):
+        executable = select(Report).where(Report.id == reportId)
+        query = await self.db.execute(executable)
+        report = query.scalar_one()
+        deserialized: dict = json.loads(report.structure)
+        return deserialized  if deserialized.keys() == ['arguments', 'relations', 'summary'] else None
