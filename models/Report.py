@@ -1,9 +1,5 @@
 from pydantic import BaseModel
 
-from models.Argument import Argument
-from models.Relation import Relation
-from models.Summary import Summary
-
 class ArgumentModel(BaseModel):
     text: str
     start: int

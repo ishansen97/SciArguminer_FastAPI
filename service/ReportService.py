@@ -16,9 +16,9 @@ class ReportService:
 
     async def save_report(self, report: ReportModel):
         serialized_report = {
-            'arguments': [dict(argument) for argument in report.arguments],
-            'relations': [dict(relation) for relation in report.relations],
-            'summary': dict(report.summary)
+            'arguments': [argument.model_dump() for argument in report.arguments],
+            'relations': [relation.model_dump() for relation in report.relations],
+            'summary': report.summary
         }
 
         db_report = Report(
