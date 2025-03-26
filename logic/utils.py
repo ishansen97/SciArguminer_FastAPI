@@ -43,7 +43,7 @@ def extract_components(text):
 def extract_argument_info(text, content):
     argument, argType = text[0].strip(), text[1]
     # consider only the first 5 words for text search (temporary solution)
-    search_text = argument.split(' ')[:5] if len(argument.split(' ')) > 5 else argument
+    search_text = ' '.join(argument.split(' ')[:5]) if len(argument.split(' ')) > 5 else argument
     # index = content.find(argument)
     index = content.find(search_text)
     start, end = -1, -1
