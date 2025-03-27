@@ -58,5 +58,4 @@ class ReportService:
         query = await self.db.execute(executable)
         report = query.scalar_one()
         deserialized: dict = json.loads(report.structure)
-        logger.info(f"Report {reportId} was deserializated: {deserialized.keys()}")
         return deserialized['summary']  if list(deserialized.keys()) == ['arguments', 'relations', 'summary'] else None
