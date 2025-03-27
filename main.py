@@ -94,13 +94,24 @@ async def save_report(report: ReportModel, db: AsyncSession = Depends(get_db)):
         "message": f"Report saved successfully. ReportName: {report.reportName}",
     }
 
+@app.get("/api/v1/reports")
+async def get_report(fromDate: str, toDate: str, db: AsyncSession = Depends(get_db)):
+    reportService = ReportService(db)
+    logger.info(f"Accessing reports")
+    reports = await reportService.get_all_reports(fromDate, toDate)
+
+    return {
+        "status": HTTPStatus.OK if reports is not None else HTTPStatus.NOT_FOUND,
+        "records": reports
+    }
+
 @app.get("/api/v1/report/{reportId}")
 async def get_report(reportId: int, db: AsyncSession = Depends(get_db)):
     reportService = ReportService(db)
-    logger.info(f"Accessing report '{reportId}'")
+    logger.info(f"Accessing report '{type(reportId)}'")
     report = await reportService.get_report(reportId)
 
     return {
         "status": HTTPStatus.OK if report is not None else HTTPStatus.NOT_FOUND,
-        "report": report
+        "summary": report
     }

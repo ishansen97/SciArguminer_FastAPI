@@ -1,11 +1,14 @@
 import re
 import logging
+import json
 from datetime import datetime
 from itertools import groupby
 
+from db.models import Report
 from logic.constants import REL_TYPES, ARG_TYPES
 from models.Argument import Argument
 from models.Relation import Relation
+from models.Response import ReportResponseModel
 from models.Summary import Summary
 
 logger = logging.getLogger(__name__)
@@ -94,3 +97,11 @@ def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary
 
     summary = Summary(argument_summary, relation_summary)
     return summary
+
+def get_report_models(report: Report) -> ReportResponseModel:
+    model = ReportResponseModel()
+    model.id = report.id
+    model.name = report.paper
+    model.date = datetime.strftime(report.created, "%Y-%m-%d")
+
+    return model
