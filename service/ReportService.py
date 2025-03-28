@@ -26,6 +26,7 @@ class ReportService:
 
         db_report = Report(
             paper=report.reportName,
+            authors=report.authorNames,
             created=datetime.now(),
             structure=json.dumps(serialized_report)
         )

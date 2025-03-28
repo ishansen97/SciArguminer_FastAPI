@@ -16,5 +16,6 @@ class Report(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     paper = Column(String)
+    authors = Column(String)
     created = Column(DateTime)
     structure = Column(Text)

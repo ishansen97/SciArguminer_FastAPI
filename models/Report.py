@@ -13,6 +13,7 @@ class RelationModel(BaseModel):
 
 class ReportModel(BaseModel):
     reportName: str
+    authorNames: str
     arguments: list[ArgumentModel]
     relations: list[RelationModel]
     summary: dict[str, dict[str, int]]
