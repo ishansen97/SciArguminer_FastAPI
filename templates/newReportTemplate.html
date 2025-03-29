@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Argument Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #fff;
+      color: #333;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      width: 120px;
+    }
+
+    .title {
+      flex-grow: 1;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-right: 120px; /* account for logo width */
+    }
+
+    hr {
+      margin-top: 20px;
+      border: 0;
+      border-top: 2px solid #ccc;
+    }
+
+    /* Card Style */
+    .card {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Sections */
+    .section {
+      margin-top: 40px;
+    }
+
+    .section h2 {
+      font-size: 22px;
+      color: #34495e;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e1e1e1;
+      padding-bottom: 5px;
+    }
+
+    .argument, .relation {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="{{ logo_path }}" alt="SciArguminer Logo" class="logo" />
+    <div class="title">SciArguminer Report - {{ reportName }}</div>
+  </div>
+  <hr />
+
+  <!-- Summary -->
+  <div class="section">
+    <h2>Report Summary</h2>
+    <div class="card">
+        {% for key, value in summary.items() %}
+            <h3>{{ key }}</h3>
+            <ul>
+                {% for type, count in value.items() %}
+                    <li>{{ type }}: {{ count }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+  </div>
+
+  <!-- Arguments -->
+  <div class="section">
+    <h2>Arguments</h2>
+    {% for arg in arguments %}
+    <div class="card argument">
+      <p><strong>Type:</strong> {{ arg.type }}</p>
+      <p><strong>Text:</strong> {{ arg.text }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Relations -->
+  <div class="section">
+    <h2>Relations</h2>
+    {% for rel in relations %}
+    <div class="card relation">
+      <p><strong>Type:</strong> {{ rel.relation }}</p>
+      <p><strong>Source:</strong> {{ rel.head.text }}</p>
+      <p><strong>Target:</strong> {{ rel.tail.text }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+</body>
+</html>

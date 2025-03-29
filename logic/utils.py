@@ -1,17 +1,29 @@
+import os
 import re
 import logging
 import json
 from datetime import datetime
 from itertools import groupby
+from pathlib import Path
+
+from fastapi.templating import Jinja2Templates
+from weasyprint import HTML
 
 from db.models import Report
 from logic.constants import REL_TYPES, ARG_TYPES
 from models.Argument import Argument
 from models.Relation import Relation
+from models.Report import ReportModel
 from models.Response import ReportResponseModel
 from models.Summary import Summary
 
 logger = logging.getLogger(__name__)
+# Get absolute path to templates/ from current file
+BASE_DIR = Path(__file__).resolve().parent.parent  # goes from logic/ to project root
+TEMPLATES_DIR = BASE_DIR / "templates"
+IMAGES_DIR = BASE_DIR / "images"
+
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 def extract_text(text, max_length=512):
     """
@@ -105,3 +117,23 @@ def get_report_models(report: Report) -> ReportResponseModel:
     model.date = datetime.strftime(report.created, "%Y-%m-%d")
 
     return model
+
+def get_report_content(report: ReportModel) -> bytes:
+    html_content = templates.get_template('newReportTemplate.html').render({
+        'logoName': f'file://{os.path.join(IMAGES_DIR, 'Sci-Arguminer_Logo.jpg')}',
+        'reportName': report.reportName,
+        'authorNames': report.authorNames,
+        'arguments': report.arguments,
+        'relations': report.relations,
+        'summary': report.summary,
+    })
+    pdf_file = HTML(string=html_content).write_pdf()
+    return pdf_file
+# def get_report_content(summary: dict[str, dict[str, int]]) -> bytes:
+#     html_content = templates.get_template('reportTemplate.html').render({
+#         'summary': summary,
+#     })
+#     pdf_file = HTML(string=html_content).write_pdf()
+#     return pdf_file
+#
+

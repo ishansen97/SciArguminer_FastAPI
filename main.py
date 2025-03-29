@@ -2,8 +2,10 @@ import logging
 from datetime import datetime
 from http import HTTPStatus
 
-from fastapi import FastAPI, File, UploadFile, Depends
+from fastapi import FastAPI, File, UploadFile, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+# from requests import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_db
@@ -18,7 +20,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
-
+templates = Jinja2Templates(directory="templates")
 
 # Add CORS middleware
 app.add_middleware(
@@ -109,9 +111,17 @@ async def get_report(fromDate: str, toDate: str, db: AsyncSession = Depends(get_
 async def get_report(reportId: int, db: AsyncSession = Depends(get_db)):
     reportService = ReportService(db)
     logger.info(f"Accessing report '{type(reportId)}'")
-    report = await reportService.get_report(reportId)
+    report = await reportService.get_report_summary(reportId)
 
     return {
         "status": HTTPStatus.OK if report is not None else HTTPStatus.NOT_FOUND,
         "summary": report
     }
+
+@app.get("/api/v1/report/download/{reportId}")
+async def download_report(reportId: int, db: AsyncSession = Depends(get_db)):
+    reportService = ReportService(db)
+    logger.info(f"Downloading the report '{reportId}'")
+    pdf_file = await reportService.download_report(reportId)
+
+    return Response(content=pdf_file, media_type="application/pdf")

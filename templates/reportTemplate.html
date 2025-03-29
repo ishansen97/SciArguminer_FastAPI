@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SciArguminer - Report</title>
+</head>
+<body>
+    <h1>Summary Report</h1>
+    <p>Report Name: {{ reportName }}</p>
+
+    <h2>Summary Counts:</h2>
+    <div class="align-left">
+        <h3>Arguments: </h3>
+        {% for key, value in summary.items() %}
+            <label>{{ key }}:</label>
+            <label>{{ value }}</label>
+        {% endfor %}
+    </div>
+</body>
+</html>

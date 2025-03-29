@@ -54,9 +54,31 @@ class ReportService:
         reports = [utils.get_report_models(res) for res in result]
         return reports
 
-    async def get_report(self, reportId: int):
+    async def get_report_summary(self, reportId: int):
         executable = select(Report).where(Report.id == reportId)
         query = await self.db.execute(executable)
         report = query.scalar_one()
         deserialized: dict = json.loads(report.structure)
         return deserialized['summary']  if list(deserialized.keys()) == ['arguments', 'relations', 'summary'] else None
+
+    async def get_report_model(self, reportId: int) -> ReportModel:
+        executable = select(Report).where(Report.id == reportId)
+        query = await self.db.execute(executable)
+        report = query.scalar_one()
+        deserialized = json.loads(report.structure)
+
+        reportModel = ReportModel(
+            reportName=report.paper,
+            authorNames=report.authors,
+            arguments=deserialized['arguments'],
+            relations=deserialized['relations'],
+            summary=deserialized['summary']
+        )
+
+        return reportModel
+
+    async def download_report(self, reportId: int):
+        # report_summary = await self.get_report_summary(reportId)
+        report_data = await self.get_report_model(reportId)
+        pdf_file = utils.get_report_content(report_data)
+        return pdf_file
