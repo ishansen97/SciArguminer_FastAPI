@@ -125,3 +125,11 @@ async def download_report(reportId: int, db: AsyncSession = Depends(get_db)):
     pdf_file = await reportService.download_report(reportId)
 
     return Response(content=pdf_file, media_type="application/pdf")
+
+@app.post("/api/v1/report/processed-report-download", response_model=None)
+async def download_processed_report(report: ReportModel, db: AsyncSession = Depends(get_db)):
+    reportService = ReportService(db)
+    logger.info(f"Downloading the processed report '{report.reportName}'")
+    pdf_file = await reportService.download_processed_report(report)
+
+    return Response(content=pdf_file, media_type="application/pdf")

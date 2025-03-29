@@ -82,3 +82,7 @@ class ReportService:
         report_data = await self.get_report_model(reportId)
         pdf_file = utils.get_report_content(report_data)
         return pdf_file
+
+    def download_processed_report(self, reportModel: ReportModel):
+        pdf_file = utils.get_report_content(reportModel)
+        return pdf_file
