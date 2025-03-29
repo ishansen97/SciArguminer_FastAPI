@@ -119,8 +119,11 @@ def get_report_models(report: Report) -> ReportResponseModel:
     return model
 
 def get_report_content(report: ReportModel) -> bytes:
+    logo_path = Path(os.path.join(IMAGES_DIR, 'Sci-Arguminer_Logo.jpg')).resolve()
+    logo_url = logo_path.as_uri()  # 'file://C:/...' on Windows, 'file:///home/...' on Linux
+
     html_content = templates.get_template('newReportTemplate.html').render({
-        'logoName': f'file://{os.path.join(IMAGES_DIR, 'Sci-Arguminer_Logo.jpg')}',
+        'logo_path': logo_url,
         'reportName': report.reportName,
         'authorNames': report.authorNames,
         'arguments': report.arguments,
