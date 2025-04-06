@@ -53,7 +53,7 @@ def process_pdf_file(file_path):
         information.append(abstract_section)
         arguments.append(abstract_section.arguments)
         relations.append(abstract_section.relations)
-        logger.info(f'abstract relations: {json.dumps(abstract_section.relations.__dict__, indent=4)}')
+        logger.info(f'abstract relations: {json.dumps([relation.__dict__ for relation in abstract_section.relations], indent=4)}')
 
     logger.debug(f'model type: {config.model_type}')
     logger.debug(f"device type: {'gpu' if torch.cuda.is_available() else 'cpu' }")
