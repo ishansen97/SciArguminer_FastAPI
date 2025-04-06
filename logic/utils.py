@@ -140,10 +140,10 @@ def get_report_content(report: ReportModel) -> bytes:
 #     return pdf_file
 #
 def is_valid_section_heading(heading: str) -> bool:
-    invalid_headings = ['', 'acknowledgments']
+    invalid_headings = ['']
     return True if heading.lower() not in invalid_headings else False
 
 def should_end_processing(heading: str) -> bool:
-    ending_headings = ['', 'acknowledgments']
+    ending_headings = ['acknowledgments']
     return True if heading.lower() in ending_headings else False
 
