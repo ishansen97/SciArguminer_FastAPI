@@ -46,11 +46,13 @@ def process_pdf_file(file_path):
     output_sections = output_dict['sections']
     abstract_text = output_dict['abstractText']
     if (abstract_text is not None) and (abstract_text != ''):
+        logger.info(f'abstract text: {abstract_text}')
         abstract_section = Section('Abstract', abstract_text)
         abstract_section.populate_inferenced_text()
         information.append(abstract_section)
         arguments.append(abstract_section.arguments)
         relations.append(abstract_section.relations)
+        logger.info(f'abstract relations: {abstract_section.relations}')
 
     logger.debug(f'model type: {config.model_type}')
     logger.debug(f"device type: {'gpu' if torch.cuda.is_available() else 'cpu' }")
