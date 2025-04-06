@@ -74,7 +74,7 @@ async def upload_file(file: UploadFile = File(...)):
         "sections": sections,
         "arguments": arguments,
         "relations": relations,
-        "summary": summary.
+        "summary": summary,
         "globalArguments": global_arguments,
     }
 
