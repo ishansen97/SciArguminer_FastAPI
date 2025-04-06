@@ -41,6 +41,7 @@ def process_pdf_file(file_path):
 
     information = []
     arguments = []
+    global_arguments = []
     relations = []
     path = Path(file_path)
     output_dict = parse_pdf(host, path, port=port)
@@ -51,7 +52,10 @@ def process_pdf_file(file_path):
         abstract_section = Section('Abstract', abstract_text)
         abstract_section.populate_inferenced_text()
         information.append(abstract_section)
-        arguments.append(abstract_section.arguments)
+        global_arguments.extend(abstract_section.arguments)
+        for arg in abstract_section.arguments:
+            logger.info(f'argument: {arg.type}: text: {arg.text}')
+        # arguments.append(abstract_section.arguments)
         # relations.append(abstract_section.relations)
         # logger.info(f'abstract relations: {json.dumps([relation.relation for relation in abstract_section.relations], indent=4)}')
 
@@ -79,4 +83,4 @@ def process_pdf_file(file_path):
     summary = get_summary(arguments=arguments, relations=relations)
     os.remove(file_path)
     logger.info(f'File {file_path} has been deleted')
-    return information, arguments, relations, summary
+    return information, arguments, relations, summary, global_arguments
