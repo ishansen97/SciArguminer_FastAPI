@@ -8,6 +8,7 @@ from fastapi import UploadFile
 from science_parse_api.api import parse_pdf
 
 from config import ConfigManager
+from logic import utils
 from logic.utils import get_summary
 from models.Section import Section
 
@@ -47,17 +48,13 @@ def process_pdf_file(file_path):
     output_dict = parse_pdf(host, path, port=port)
     output_sections = output_dict['sections']
     abstract_text = output_dict['abstractText']
+
     if (abstract_text is not None) and (abstract_text != ''):
         logger.info(f'abstract text: {abstract_text}')
         abstract_section = Section('Abstract', abstract_text)
         abstract_section.populate_inferenced_text()
         information.append(abstract_section)
         global_arguments.extend(abstract_section.arguments)
-        for arg in abstract_section.arguments:
-            logger.info(f'argument: {arg.type}: text: {arg.text}')
-        # arguments.append(abstract_section.arguments)
-        # relations.append(abstract_section.relations)
-        # logger.info(f'abstract relations: {json.dumps([relation.relation for relation in abstract_section.relations], indent=4)}')
 
     logger.debug(f'model type: {config.model_type}')
     logger.debug(f"device type: {'gpu' if torch.cuda.is_available() else 'cpu' }")
@@ -67,17 +64,25 @@ def process_pdf_file(file_path):
         title = ''
         if key in section:
             title = section[key]
-        text = section['text']
-        sect_obj = Section(title, text)
 
-        logger.info(f'Staring to processing the section {title}')
+        if utils.is_valid_section_heading(title):
+            text = section['text']
+            sect_obj = Section(title, text)
 
-        sect_obj.populate_inferenced_text()
-        information.append(sect_obj)
-        arguments.extend(sect_obj.arguments)
-        relations.extend(sect_obj.relations)
+            logger.info(f'Staring to processing the section {title}')
 
-        logger.info(f'Finished processing the section {title}')
+            sect_obj.populate_inferenced_text()
+            information.append(sect_obj)
+            arguments.extend(sect_obj.arguments)
+            relations.extend(sect_obj.relations)
+
+            logger.info(f'Finished processing the section {title}')
+        else:
+            logger.warn(f'Skipping section {title}')
+
+        if utils.should_end_processing(title):
+            logger.info(f'Finished processing the paper')
+            break
 
     # get the summary info
     summary = get_summary(arguments=arguments, relations=relations)
