@@ -50,7 +50,7 @@ def process_pdf_file(file_path):
     abstract_text = output_dict['abstractText']
 
     if (abstract_text is not None) and (abstract_text != ''):
-        logger.info(f'abstract text: {abstract_text}')
+        # logger.info(f'abstract text: {abstract_text}')
         abstract_section = Section('Abstract', abstract_text)
         abstract_section.populate_inferenced_text()
         information.append(abstract_section)
