@@ -36,6 +36,6 @@ class Section:
                 # argument zoning
                 sentences = [sent for section_sent in section_sents for sent in section_sent]
                 label_sentence_pair = modelOperations.inference_from_model(sentences)
-                self.zone_labels.extend([ZoneLabel(label, sentence, self.title) for label, sentence in label_sentence_pair])
+                self.zone_labels.extend([ZoneLabel(label, sentence, self.title) for sentence, label in label_sentence_pair])
         else:
             logger.log(logging.WARNING, "No inferenced text found for section {} and possible text: {}".format(self.title, joined_batches))
