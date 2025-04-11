@@ -9,6 +9,7 @@ class Config:
         self.upload_dir = ''
         self.model_name = ''
         self.model_type = ''
+        self.zone_model = ''
         self.__read_file(config_file)
 
     def __read_file(self, file_name: str):
@@ -19,6 +20,7 @@ class Config:
             self.upload_dir = config_data['UPLOAD_DIR']
             self.model_name = config_data['MODEL_NAME']
             self.model_type = config_data['MODEL_TYPE']
+            self.zone_model = config_data['ZONE_MODEL']
 
     def __str__(self) -> str:
         return f"Science Parse API Host: {self.science_parse_api_host}\nScience Parse API Port: {self.science_parse_api_port}\nUpload Directory: {self.upload_dir}"

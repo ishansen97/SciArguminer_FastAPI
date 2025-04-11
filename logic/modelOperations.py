@@ -1,12 +1,15 @@
 import torch
-from transformers import pipeline, BartForConditionalGeneration, BartTokenizer, T5Tokenizer, T5ForConditionalGeneration
+from transformers import pipeline, BartForConditionalGeneration, BartTokenizer, T5Tokenizer, T5ForConditionalGeneration, \
+    AutoTokenizer, AutoModelForSequenceClassification
 
 from config import ConfigManager
 import spacy
 
 config = ConfigManager().config
 nlp = spacy.load("en_core_web_sm")  # Load a small English NLP model
-
+ZONE_LABELS = ['BACKGROUND', 'OBJECTIVE', 'METHODS', 'RESULTS', 'CONCLUSIONS']
+ZONE_ID2LABEL = {idx: label for idx, label in enumerate(ZONE_LABELS)}
+ZONE_LABEL2ID = {label: idx for idx, label in enumerate(ZONE_LABELS)}
 
 def generate_augmented_text(text):
     # model_name = config.model_name
@@ -30,6 +33,24 @@ def generate_augmented_text(text):
             # Log or handle errors during generation
             raise RuntimeError(f"Error generating augmented text: {e}")
 
+
+def inference_from_model(texts):
+    zone_model = config.zone_model
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    zoning_tokenizer = AutoTokenizer.from_pretrained(zone_model)
+    zoning_model = AutoModelForSequenceClassification.from_pretrained(zone_model).to(device)
+
+    inputs = zoning_tokenizer(texts, return_tensors="pt", truncation=True, padding="max_length", max_length=512)
+    model_inputs = {key: val.to(device) for key, val in inputs.items()}
+    # Get model predictions
+    with torch.no_grad():
+        outputs = zoning_model(**model_inputs)
+        logits = outputs.logits
+        preds = torch.argmax(logits, dim=-1)
+        items = [pred.item() for pred in preds]
+        labels = [item for item in items]
+
+    return [(text, ZONE_ID2LABEL[label]) for text, label in zip(texts,labels)]
 
 def get_section_sentences(content, max_length=1024):
     doc = nlp(content)

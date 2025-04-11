@@ -3,5 +3,6 @@
   "SCIENCE_PARSE_API_PORT": "8079",
   "UPLOAD_DIR": "temp_files",
   "MODEL_NAME": "IshanHF97/sciarguminer_t5_base_complete_data_epoch_10",
+  "ZONE_MODEL": "IshanHF97/sciarguminer_scibert_zoning",
   "MODEL_TYPE": "T5"
 }

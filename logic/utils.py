@@ -82,6 +82,37 @@ def extract_relations(text):
 
     return results
 
+
+def extract_relations_with_zones(text):
+    rel_pattern = r'(\(\(\s+\w+\s+\)\))\[\s*([^|\]=]+)\s*\|\s*([^|\]=]+)\s*\|\s*([^=|\]]+)\s*=\s*([^\]]+)\s*\]'
+    tail_pattern = r'(\(\(\s+\w+\s+\)\))\[\s*([^|\]=]+)\s*\|\s*([^|\]=]+)\s*\]'
+    # matches = re.search(rel_pattern, text)
+    matches = re.finditer(rel_pattern, text)
+    tail_matches = re.finditer(tail_pattern, text)
+
+    results = []
+    tail_results = []
+    for match in matches:
+        result = {}
+        result['head_zone'] = match.group(1)
+        result['head'] = match.group(2)
+        result['head_comp'] = match.group(3)
+        result['rel_type'] = match.group(4)
+        result['tail'] = match.group(5)
+        results.append(result)
+
+    for match in tail_matches:
+        result = {}
+        result['tail_zone'] = match.group(1)
+        result['tail'] = match.group(2)
+        result['tail_comp'] = match.group(3)
+        tail_results.append(result)
+
+    return results, tail_results
+
+def remove_zoning_paranthesis(zone_text):
+    return zone_text.replace("((", "").replace("))", "").strip()
+
 def get_datetime(text):
     if text is not None:
         # return datetime.strptime(text, '%Y-%m-%d %H:%M:%S')

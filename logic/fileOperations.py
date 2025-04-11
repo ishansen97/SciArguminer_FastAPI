@@ -43,7 +43,10 @@ def process_pdf_file(file_path):
     information = []
     arguments = []
     global_arguments = []
+    global_zones = []
     relations = []
+    zone_info = []
+
     path = Path(file_path)
     output_dict = parse_pdf(host, path, port=port)
     output_sections = output_dict['sections']
@@ -52,9 +55,10 @@ def process_pdf_file(file_path):
     if (abstract_text is not None) and (abstract_text != ''):
         # logger.info(f'abstract text: {abstract_text}')
         abstract_section = Section('Abstract', abstract_text)
-        abstract_section.populate_inferenced_text()
+        abstract_section.populate_inferenced_text(calculate_zone_labels=True)
         information.append(abstract_section)
         global_arguments.extend(abstract_section.arguments)
+        global_zones.extend(abstract_section.zone_labels)
 
     logger.debug(f'model type: {config.model_type}')
     logger.debug(f"device type: {'gpu' if torch.cuda.is_available() else 'cpu' }")
@@ -88,4 +92,4 @@ def process_pdf_file(file_path):
     summary = get_summary(arguments=arguments, relations=relations)
     os.remove(file_path)
     logger.info(f'File {file_path} has been deleted')
-    return information, arguments, relations, summary, global_arguments
+    return information, arguments, relations, summary, global_arguments, global_zones
