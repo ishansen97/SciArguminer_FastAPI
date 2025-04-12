@@ -213,7 +213,7 @@ def process_global_local_arguments(globalZones: list[ZoneLabel], arguments: list
         for argument in arguments:
             similarity_score = modelOperations.get_sentence_embeddings(sentence_model, zoningLabel.sentence, argument.text).item()
             if similarity_score > threshold:
-                base_sentence_similarities[zoneIdx+1] = {argument: argument, 'similarity': "{score:.4f}".format(score=similarity_score)}
+                base_sentence_similarities[zoneIdx+1] = {'argument': argument, 'similarity': "{score:.4f}".format(score=similarity_score)}
 
     return base_sentence_similarities
 
