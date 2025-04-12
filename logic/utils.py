@@ -85,7 +85,7 @@ def extract_argument_info(text, content, title):
     return Argument(argument, start, end, argType, title, '')
 
 def extract_argument_info_with_zoning(arg_info, content, title):
-    zone, argument, argType = arg_info['zone'], arg_info['argument_comps'][0], arg_info['argument_comps'][0]
+    zone, argument, argType = arg_info['zone'], arg_info['argument_comps'][0], arg_info['argument_comps'][1]
     # consider only the first 5 words for text search (temporary solution)
     search_text = ' '.join(argument.split(' ')[:5]) if len(argument.split(' ')) > 5 else argument
     # index = content.find(argument)
