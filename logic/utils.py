@@ -97,40 +97,36 @@ def extract_argument_info_with_zoning(arg_info, content, title):
     return Argument(argument, start, end, argType, title, zone)
 
 
-def extract_relations(text):
+def extract_relations(text, title):
     rel_pattern = r'\[\s*([^|\]=]+)\s*\|\s*([^|\]=]+)\s*\|\s*([^=|\]]+)\s*=\s*([^\]]+)\s*\]'
     matches = re.finditer(rel_pattern, text)
 
     results: list[Relation] = []
 
     for match in matches:
-        head = Argument(match.group(1).strip(), 0, 0, match.group(2))
-        tail = Argument(match.group(4).strip(), 0, 0, '')
+        head = Argument(match.group(1).strip(), 0, 0, match.group(2), title, '')
+        tail = Argument(match.group(4).strip(), 0, 0, '', title, '')
         relation = match.group(3).strip()
         results.append(Relation(head, tail, relation))
 
     return results
 
 
-def extract_relations_with_zones(text):
+def extract_relations_with_zones(text, title):
     rel_pattern = r'(\(\(\s+\w+\s+\)\))\[\s*([^|\]=]+)\s*\|\s*([^|\]=]+)\s*\|\s*([^=|\]]+)\s*=\s*([^\]]+)\s*\]'
     tail_pattern = r'(\(\(\s+\w+\s+\)\))\[\s*([^|\]=]+)\s*\|\s*([^|\]=]+)\s*\]'
     # matches = re.search(rel_pattern, text)
     matches = re.finditer(rel_pattern, text)
     tail_matches = re.finditer(tail_pattern, text)
 
-    results = []
+    results: list[Relation] = []
     tail_results = []
+    head, tail = None, None
     for match in matches:
-        result = {}
-        result['head_zone'] = match.group(1)
-        result['head'] = match.group(2)
-        result['head_comp'] = match.group(3)
-        result['rel_type'] = match.group(4)
-        result['tail'] = match.group(5)
-        results.append(result)
+        head = Argument(match.group(2).strip(), 0, 0, match.group(3), title, match.group(1))
 
     for match in tail_matches:
+        tail = Argument(match.group(2).strip(), 0, 0, match.group(3), title, match.group(1))
         result = {}
         result['tail_zone'] = match.group(1)
         result['tail'] = match.group(2)
