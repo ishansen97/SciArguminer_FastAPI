@@ -21,11 +21,13 @@ class Section:
         self.inferenced_text = modelOperations.generate_augmented_text(joined_batches)
 
         if self.inferenced_text is not None:
-            extracted_components = [utils.extract_components(inferenced) for inferenced in self.inferenced_text]
+            # extracted_components = [utils.extract_components(inferenced) for inferenced in self.inferenced_text]
+            extracted_components = [utils.extract_components_with_zones(inferenced) for inferenced in self.inferenced_text]
 
             for component in extracted_components:
                 for item in component:
-                    self.arguments.append(utils.extract_argument_info(item, self.body))
+                    # self.arguments.append(utils.extract_argument_info(item, self.body, self.title))
+                    self.arguments.append(utils.extract_argument_info_with_zoning(item, self.body, self.title))
 
             extracted_relations = [utils.extract_relations(inferenced) for inferenced in self.inferenced_text]
             for relations in extracted_relations:

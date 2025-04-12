@@ -60,7 +60,7 @@ async def upload_file(file: UploadFile = File(...)):
 
     # save the file
     file_path = save_upload_file(file)
-    sections, arguments, relations, summary, global_arguments, global_zones = process_pdf_file(file_path)
+    sections, arguments, relations, summary, global_arguments, global_zones, global_local_argument_info = process_pdf_file(file_path)
 
     endTime = datetime.now()
     processedTime = endTime - startTime
@@ -76,7 +76,8 @@ async def upload_file(file: UploadFile = File(...)):
         "relations": relations,
         "summary": summary,
         "globalArguments": global_arguments,
-        "globalZones": global_zones
+        "globalZones": global_zones,
+        "globalLocalArgumentInfo": global_local_argument_info,
     }
 
 @app.get("/api/v1/history")

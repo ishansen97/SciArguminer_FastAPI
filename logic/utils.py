@@ -10,12 +10,15 @@ from fastapi.templating import Jinja2Templates
 from weasyprint import HTML
 
 from db.models import Report
+from logic import modelOperations
 from logic.constants import REL_TYPES, ARG_TYPES
 from models.Argument import Argument
 from models.Relation import Relation
 from models.Report import ReportModel
 from models.Response import ReportResponseModel
 from models.Summary import Summary
+from models.ZoneLabels import ZoneLabel
+from sentence_transformers import SentenceTransformer
 
 logger = logging.getLogger(__name__)
 # Get absolute path to templates/ from current file
@@ -55,7 +58,21 @@ def extract_components(text):
     split_components = [match.split('|') for match in matches]
     return split_components
 
-def extract_argument_info(text, content):
+
+def extract_components_with_zones(text):
+    pattern = r'(\(\(\s+\w+\s+\)\))\[([^]]+?\s\|\s\w+)'
+    matches = re.findall(pattern, text)
+    components = []
+
+    for match in matches:
+        components.append({
+            'zone': remove_zoning_paranthesis(match[0]),
+            'argument_comps': [split_part.strip() for split_part in match[1].split('|')]
+        })
+
+    return components
+
+def extract_argument_info(text, content, title):
     argument, argType = text[0].strip(), text[1]
     # consider only the first 5 words for text search (temporary solution)
     search_text = ' '.join(argument.split(' ')[:5]) if len(argument.split(' ')) > 5 else argument
@@ -65,7 +82,19 @@ def extract_argument_info(text, content):
     if index > -1:
         start, end = index, index + len(argument)
 
-    return Argument(argument, start, end, argType)
+    return Argument(argument, start, end, argType, title, '')
+
+def extract_argument_info_with_zoning(arg_info, content, title):
+    zone, argument, argType = arg_info['zone'], arg_info['argument_comps'][0], arg_info['argument_comps'][0]
+    # consider only the first 5 words for text search (temporary solution)
+    search_text = ' '.join(argument.split(' ')[:5]) if len(argument.split(' ')) > 5 else argument
+    # index = content.find(argument)
+    index = content.find(search_text)
+    start, end = -1, -1
+    if index > -1:
+        start, end = index, index + len(argument)
+
+    return Argument(argument, start, end, argType, title, zone)
 
 
 def extract_relations(text):
@@ -112,6 +141,7 @@ def extract_relations_with_zones(text):
 
 def remove_zoning_paranthesis(zone_text):
     return zone_text.replace("((", "").replace("))", "").strip()
+
 
 def get_datetime(text):
     if text is not None:
@@ -177,4 +207,19 @@ def is_valid_section_heading(heading: str) -> bool:
 def should_end_processing(heading: str) -> bool:
     ending_headings = ['acknowledgments']
     return True if heading.lower() in ending_headings else False
+
+def process_global_local_arguments(globalZones: list[ZoneLabel], arguments: list[Argument]):
+    base_sentence_similarities = {}
+    threshold = 0.3
+    sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+    for zoneIdx, zoningLabel in enumerate(globalZones):
+        base_sentence_similarities[zoneIdx + 1] = {}
+        for argument in arguments:
+            similarity_score = modelOperations.get_sentence_embeddings(sentence_model, zoningLabel.sentence, argument.text).item()
+            if similarity_score > threshold:
+                base_sentence_similarities[zoneIdx+1] = {argument: argument, 'similarity': "{score:.4f}".format(score=similarity_score)}
+
+    return base_sentence_similarities
+
+
 

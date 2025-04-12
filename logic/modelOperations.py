@@ -2,6 +2,7 @@ import torch
 from transformers import pipeline, BartForConditionalGeneration, BartTokenizer, T5Tokenizer, T5ForConditionalGeneration, \
     AutoTokenizer, AutoModelForSequenceClassification
 
+from sentence_transformers import SentenceTransformer, util
 from config import ConfigManager
 import spacy
 
@@ -82,3 +83,11 @@ def get_model_and_tokenizer(device):
         tokenizer = T5Tokenizer.from_pretrained(config.model_name)
 
     return model, tokenizer
+
+
+def get_sentence_embeddings(model, base_sentence, sentence):
+    embedding1 = model.encode(base_sentence, convert_to_tensor=True)
+    embedding2 = model.encode(sentence, convert_to_tensor=True)
+
+    similarity_score = util.pytorch_cos_sim(embedding1, embedding2)
+    return similarity_score
