@@ -15,7 +15,7 @@ class Section:
         self.relations: list[Relation] = []
         self.zone_labels: list[ZoneLabel] = []
 
-    def populate_inferenced_text(self, calculate_zone_labels=False):
+    def populate_inferenced_text(self, calculate_zone_labels=True):
         section_sents = modelOperations.get_section_sentences(self.body)
         joined_batches = [' '.join(batch) for batch in section_sents]
         self.inferenced_text = modelOperations.generate_augmented_text(joined_batches)

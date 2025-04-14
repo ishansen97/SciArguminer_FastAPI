@@ -12,7 +12,7 @@ from weasyprint import HTML
 from config import ConfigManager
 from db.models import Report
 from logic import modelOperations
-from logic.constants import REL_TYPES, ARG_TYPES
+from logic.constants import REL_TYPES, ARG_TYPES, ZONE_TYPES
 from models.Argument import Argument
 from models.Relation import Relation
 from models.Report import ReportModel
@@ -147,26 +147,32 @@ def get_datetime(text):
         return datetime.strptime(text, '%Y-%m-%d')
     return None
 
-def get_summary(arguments: list[Argument], relations: list[Relation]) -> Summary:
+def get_summary(arguments: list[Argument], relations: list[Relation], zones: list[ZoneLabel]) -> Summary:
     relations_sorted = sorted(relations, key=lambda r: r.relation.strip())
     arguments_sorted = sorted(arguments, key=lambda a: a.type.strip())
+    zones_sorted = sorted(zones, key=lambda z: z.label.strip())
 
     relation_groups = groupby(relations_sorted, key=lambda r: r.relation.strip())
     argument_groups = groupby(arguments_sorted, key=lambda r: r.type.strip())
+    zone_groups = groupby(zones_sorted, key=lambda z: z.label.strip())
 
     relation_group_list = [(key, list(group)) for key, group in relation_groups if key in REL_TYPES]
     argument_group_list = [(key, list(group)) for key, group in argument_groups if key in ARG_TYPES]
+    zone_group_list = [(key, list(group)) for key, group in zone_groups if key in ZONE_TYPES]
 
     relation_groups_total = sum(list(map(lambda pair: len(pair[1]), relation_group_list)), 0)
     argument_groups_total = sum(list(map(lambda pair: len(pair[1]), argument_group_list)), 0)
+    zone_groups_total = sum(list(map(lambda pair: len(pair[1]), zone_group_list)), 0)
 
     relation_summary = {key: len(group) for key, group in relation_group_list if key in REL_TYPES}
     argument_summary = {key: len(group) for key, group in argument_group_list if key in ARG_TYPES}
+    zone_summary = {key: len(group) for key, group in zone_group_list if key in ZONE_TYPES}
 
     relation_summary = {**relation_summary, 'totalCount': relation_groups_total}
     argument_summary = {**argument_summary, 'totalCount': argument_groups_total}
+    zone_summary = {**zone_summary, 'totalCount': zone_groups_total}
 
-    summary = Summary(argument_summary, relation_summary)
+    summary = Summary(argument_summary, relation_summary, zone_summary)
     return summary
 
 def get_report_models(report: Report) -> ReportResponseModel:

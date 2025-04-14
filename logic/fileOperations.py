@@ -44,6 +44,7 @@ def process_pdf_file(file_path):
     arguments = []
     global_arguments = []
     global_zones = []
+    local_zones = []
     relations = []
     zone_info = []
 
@@ -79,6 +80,7 @@ def process_pdf_file(file_path):
             information.append(sect_obj)
             arguments.extend(sect_obj.arguments)
             relations.extend(sect_obj.relations)
+            local_zones.extend(sect_obj.zone_labels)
 
             logger.info(f'Finished processing the section {title}')
         else:
@@ -89,7 +91,7 @@ def process_pdf_file(file_path):
             break
 
     # get the summary info
-    summary = get_summary(arguments=arguments, relations=relations)
+    summary = get_summary(arguments=arguments, relations=relations, zones=local_zones)
     global_local_argument_info = utils.process_global_local_arguments(global_zones, arguments)
     os.remove(file_path)
     logger.info(f'File {file_path} has been deleted')
