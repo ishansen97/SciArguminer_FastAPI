@@ -9,6 +9,7 @@ from pathlib import Path
 from fastapi.templating import Jinja2Templates
 from weasyprint import HTML
 
+from config import ConfigManager
 from db.models import Report
 from logic import modelOperations
 from logic.constants import REL_TYPES, ARG_TYPES
@@ -21,6 +22,7 @@ from models.ZoneLabels import ZoneLabel
 from sentence_transformers import SentenceTransformer
 
 logger = logging.getLogger(__name__)
+config = ConfigManager().config
 # Get absolute path to templates/ from current file
 BASE_DIR = Path(__file__).resolve().parent.parent  # goes from logic/ to project root
 TEMPLATES_DIR = BASE_DIR / "templates"
@@ -206,13 +208,12 @@ def should_end_processing(heading: str) -> bool:
 
 def process_global_local_arguments(globalZones: list[ZoneLabel], arguments: list[Argument]):
     base_sentence_similarities = {}
-    threshold = 0.3
     sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
     for zoneIdx, zoningLabel in enumerate(globalZones):
         base_sentence_similarities[zoneIdx + 1] = []
         for argument in arguments:
             similarity_score = modelOperations.get_sentence_embeddings(sentence_model, zoningLabel.sentence, argument.text).item()
-            if similarity_score > threshold:
+            if similarity_score > config.similarity_threshold:
                 base_sentence_similarities[zoneIdx+1].append({
                     'argument': argument,
                     'similarity': "{score:.4f}".format(score=similarity_score)

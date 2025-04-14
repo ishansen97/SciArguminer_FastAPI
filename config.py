@@ -10,6 +10,7 @@ class Config:
         self.model_name = ''
         self.model_type = ''
         self.zone_model = ''
+        self.similarity_threshold = 0
         self.__read_file(config_file)
 
     def __read_file(self, file_name: str):
@@ -21,6 +22,7 @@ class Config:
             self.model_name = config_data['MODEL_NAME']
             self.model_type = config_data['MODEL_TYPE']
             self.zone_model = config_data['ZONE_MODEL']
+            self.similarity_threshold = config_data['SIMILARITY_THRESHOLD']
 
     def __str__(self) -> str:
         return f"Science Parse API Host: {self.science_parse_api_host}\nScience Parse API Port: {self.science_parse_api_port}\nUpload Directory: {self.upload_dir}"
