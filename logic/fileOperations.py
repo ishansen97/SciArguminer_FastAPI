@@ -92,8 +92,8 @@ def process_pdf_file(file_path):
 
     # get the summary info
     summary = get_summary(arguments=arguments, relations=relations, zones=local_zones)
-    # global_local_argument_info = utils.process_global_local_arguments(global_zones, arguments)
-    global_local_argument_info = utils.process_global_local_arguments_with_sentence_zones(global_zones, local_zones)
+    global_local_argument_info = utils.process_global_local_arguments(global_zones, arguments)
+    global_local_argument_info_sentences = utils.process_global_local_arguments_with_sentence_zones(global_zones, local_zones)
     os.remove(file_path)
     logger.info(f'File {file_path} has been deleted')
-    return information, arguments, relations, summary, global_arguments, global_zones, global_local_argument_info
+    return information, arguments, relations, summary, global_arguments, global_zones, global_local_argument_info, global_local_argument_info_sentences
