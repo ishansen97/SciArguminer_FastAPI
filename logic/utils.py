@@ -140,6 +140,13 @@ def extract_relations_with_zones(text, title):
 def remove_zoning_paranthesis(zone_text):
     return zone_text.replace("((", "").replace("))", "").strip()
 
+def remove_paranthesis(text):
+    return (text.replace("((", "")
+                .replace("))", "")
+                .replace("[", "{")
+                .replace("]", "}")
+                .replace("|", "#")
+                .strip())
 
 def get_datetime(text):
     if text is not None:
@@ -226,6 +233,23 @@ def process_global_local_arguments(globalZones: list[ZoneLabel], arguments: list
                 })
 
     return base_sentence_similarities
+
+def process_global_local_arguments_with_sentence_zones(globalZones: list[ZoneLabel], localSentences: list[ZoneLabel]):
+    base_sentence_similarities = {}
+    sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+    for zoneIdx, zoningLabel in enumerate(globalZones):
+        base_sentence_similarities[zoneIdx + 1] = []
+        for localSentence in localSentences:
+            similarity_score = modelOperations.get_sentence_embeddings(sentence_model, zoningLabel.sentence, localSentence.sentence).item()
+            if similarity_score > config.similarity_threshold:
+                base_sentence_similarities[zoneIdx+1].append({
+                    'localSentence': localSentence,
+                    'similarity': "{score:.4f}".format(score=similarity_score)
+                })
+
+    return base_sentence_similarities
+
+
 
 
 

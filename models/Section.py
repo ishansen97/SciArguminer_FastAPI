@@ -16,7 +16,8 @@ class Section:
         self.zone_labels: list[ZoneLabel] = []
 
     def populate_inferenced_text(self, calculate_zone_labels=True):
-        section_sents = modelOperations.get_section_sentences(self.body)
+        modified_text = utils.remove_paranthesis(self.body)
+        section_sents = modelOperations.get_section_sentences(modified_text)
         joined_batches = [' '.join(batch) for batch in section_sents]
         self.inferenced_text = modelOperations.generate_augmented_text(joined_batches)
 
@@ -27,7 +28,8 @@ class Section:
             for component in extracted_components:
                 for item in component:
                     # self.arguments.append(utils.extract_argument_info(item, self.body, self.title))
-                    self.arguments.append(utils.extract_argument_info_with_zoning(item, self.body, self.title))
+                    # self.arguments.append(utils.extract_argument_info_with_zoning(item, self.body, self.title))
+                    self.arguments.append(utils.extract_argument_info_with_zoning(item, modified_text, self.title))
 
             extracted_relations = [utils.extract_relations(inferenced, self.title) for inferenced in self.inferenced_text]
             # extracted_relations = [utils.extract_relations_with_zones(inferenced, self.title) for inferenced in self.inferenced_text]
