@@ -1,4 +1,5 @@
 import os
+import requests
 from pathlib import Path
 import logging
 import torch
@@ -9,7 +10,7 @@ from science_parse_api.api import parse_pdf
 
 from config import ConfigManager
 from logic import utils
-from logic.utils import get_summary
+# from logic.utils import get_summary
 from models.Section import Section
 
 config = ConfigManager().config
@@ -91,9 +92,32 @@ def process_pdf_file(file_path):
             break
 
     # get the summary info
-    summary = get_summary(arguments=arguments, relations=relations, zones=local_zones)
+    summary = utils.get_summary(arguments=arguments, relations=relations, zones=local_zones)
     global_local_argument_info = utils.process_global_local_arguments(global_zones, arguments)
     global_local_argument_info_sentences = utils.process_global_local_arguments_with_sentence_zones(global_zones, local_zones)
     os.remove(file_path)
     logger.info(f'File {file_path} has been deleted')
     return information, arguments, relations, summary, global_arguments, global_zones, global_local_argument_info, global_local_argument_info_sentences
+
+
+def download_pdf(pdf_url: str, save_path="temp_paper.pdf") -> str:
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/113.0.0.0 Safari/537.36"
+        ),
+        "Referer": "https://dl.acm.org/",
+    }
+
+    with requests.Session() as session:
+        response = session.get(pdf_url, headers=headers, stream=True, allow_redirects=True)
+
+        if 'pdf' not in response.headers.get('Content-Type', ''):
+            raise ValueError("Failed to download PDF. ACM might be blocking non-browser clients.")
+
+        with open(save_path, "wb") as f:
+            for chunk in response.iter_content(8192):
+                f.write(chunk)
+
+    return save_path

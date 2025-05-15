@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from http import HTTPStatus
 
-from fastapi import FastAPI, File, UploadFile, Depends, Response
+from fastapi import FastAPI, File, UploadFile, Depends, Response, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 # from requests import Response
@@ -10,7 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_db
 from db.seed_async import init_db
+from logic import utils
 from logic.fileOperations import save_upload_file, process_pdf_file
+from models.DOIReport import DOIRequest
 from models.Report import ReportModel
 from service.ReportService import ReportService
 from service.historyService import HistoryService
@@ -144,3 +146,14 @@ async def download_processed_report(report: ReportModel, db: AsyncSession = Depe
     pdf_file = reportService.download_processed_report(report)
 
     return Response(content=pdf_file, media_type="application/pdf")
+
+@app.post("/api/v1/process-doi")
+async def process_doi(request: DOIRequest):
+    doi = request.doiUrl.strip()
+    try:
+        logger.info(f"Processing initial doi '{doi}'")
+        pdf_path = await utils.download_pdf_from_doi(doi)
+        logger.info(f"Processing doi {doi}, and the file path {pdf_path}")
+        return {"status": HTTPStatus.OK, "pdf_path": pdf_path}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

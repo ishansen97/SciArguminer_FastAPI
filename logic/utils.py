@@ -1,10 +1,11 @@
 import os
 import re
 import logging
-import json
+import requests
 from datetime import datetime
 from itertools import groupby
 from pathlib import Path
+from logic.fileOperations import download_pdf
 
 from fastapi.templating import Jinja2Templates
 from weasyprint import HTML
@@ -249,6 +250,23 @@ def process_global_local_arguments_with_sentence_zones(globalZones: list[ZoneLab
 
     return base_sentence_similarities
 
+# DOI PDF download
+def get_pdf_url_from_doi(doi: str):
+    unpaywall_api = f"https://api.unpaywall.org/v2/{doi}?email=ishanksen@gmail.com"
+    response = requests.get(unpaywall_api)
+    data = response.json()
+    logger.info(f'Retrieved {data} data from unpaywall API')
+
+    if "best_oa_location" in data and data["best_oa_location"]:
+        return data["best_oa_location"]["url_for_pdf"], data['title']
+    raise ValueError("PDF not available for this DOI.")
+
+async def download_pdf_from_doi(doi_url: str) -> str:
+    doi = doi_url.strip().split("doi.org/")[-1]
+    logger.info("Downloading PDF from DOI: %s", doi)
+    pdf_url, title = get_pdf_url_from_doi(doi)
+    logger.info(f"PDF URL: {pdf_url}")
+    return download_pdf(pdf_url, save_path=f'{title}.pdf')
 
 
 
