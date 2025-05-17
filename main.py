@@ -12,7 +12,6 @@ from db.database import get_db
 from db.seed_async import init_db
 from logic import utils
 from logic.fileOperations import save_upload_file, process_pdf_file
-from models.DOIReport import DOIRequest
 from models.Report import ReportModel
 from service.ReportService import ReportService
 from service.historyService import HistoryService
@@ -147,13 +146,44 @@ async def download_processed_report(report: ReportModel, db: AsyncSession = Depe
 
     return Response(content=pdf_file, media_type="application/pdf")
 
-@app.post("/api/v1/process-doi")
-async def process_doi(request: DOIRequest):
-    doi = request.doiUrl.strip()
+@app.get("/api/v1/access-doi/")
+async def access_doi(doiUrl: str):
     try:
-        logger.info(f"Processing initial doi '{doi}'")
-        pdf_path = await utils.download_pdf_from_doi(doi)
-        logger.info(f"Processing doi {doi}, and the file path {pdf_path}")
-        return {"status": HTTPStatus.OK, "pdf_path": pdf_path}
+        logger.info(f"Processing initial doi '{doiUrl}'")
+        pdf_path = await utils.download_pdf_from_doi(doiUrl)
+        logger.info(f"Processing doi {doiUrl}, and the file path {pdf_path}")
+        return {"status": HTTPStatus.OK, "filePath": pdf_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/process-doi/")
+async def process_doi(fileName: str):
+    startTime = datetime.now()
+    logger.info(f"Processing doi '{fileName}'")
+    (sections,
+     arguments,
+     relations,
+     summary,
+     global_arguments,
+     global_zones,
+     global_local_argument_info,
+     global_local_argument_info_sentences) = process_pdf_file(fileName)
+
+    endTime = datetime.now()
+    processedTime = endTime - startTime
+
+    # logs the time elapsed
+    logger.info(f"Processed PDF '{fileName}' | Duration: {processedTime}")
+
+    return {
+        "status": HTTPStatus.OK,
+        "message": f"File processed successfully. Filename: {fileName}",
+        "sections": sections,
+        "arguments": arguments,
+        "relations": relations,
+        "summary": summary,
+        "globalArguments": global_arguments,
+        "globalZones": global_zones,
+        "globalLocalArgumentInfo": global_local_argument_info,
+        "globalLocalArgumentInfoSentences": global_local_argument_info_sentences,
+    }
